@@ -187,3 +187,30 @@ ratbag_device_data_asus_is_wireless(const struct ratbag_device_data *data);
  */
 uint32_t
 ratbag_device_data_asus_get_quirks(const struct ratbag_device_data *data);
+
+/* Lamzu */
+
+/**
+ * @return Number of profiles
+ */
+int
+ratbag_device_data_lamzu_get_profile_count(const struct ratbag_device_data *data);
+
+/**
+ * @return Number of buttons
+ */
+int
+ratbag_device_data_lamzu_get_button_count(const struct ratbag_device_data *data);
+
+/**
+ * @return Number of DPI presets
+ */
+int
+ratbag_device_data_lamzu_get_dpi_count(const struct ratbag_device_data *data);
+
+/**
+ * @return NULL if not set
+ */
+struct dpi_range *
+ratbag_device_data_lamzu_get_dpi_range(const struct ratbag_device_data *data);
+

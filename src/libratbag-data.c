@@ -33,6 +33,7 @@
 #include "asus.h"
 #include "driver-sinowealth.h"
 #include "driver-steelseries.h"
+#include "driver-lamzu.h"
 #include "libratbag.h"
 #include "libratbag-private.h"
 #include "libratbag-data.h"
@@ -63,6 +64,7 @@ enum driver {
 	SINOWEALTH_NUBWO,
 	OPENINPUT,
 	MARSGAMING,
+	LAMZU,
 };
 
 struct data_hidpp20 {
@@ -108,6 +110,13 @@ struct data_asus {
 	uint32_t quirks;
 };
 
+struct data_lamzu {
+	int profile_count;
+	int button_count;
+	int dpi_count;
+	struct dpi_range *dpi_range;
+};
+
 struct ratbag_device_data {
 	int refcount;
 	char *name;
@@ -122,6 +131,7 @@ struct ratbag_device_data {
 		struct data_sinowealth sinowealth;
 		struct data_steelseries steelseries;
 		struct data_asus asus;
+		struct data_lamzu lamzu;
 	};
 };
 
@@ -433,6 +443,40 @@ init_data_asus(struct ratbag *ratbag,
 	g_clear_error(&error);
 }
 
+static void
+init_data_lamzu(struct ratbag *ratbag,
+		GKeyFile *keyfile,
+		struct ratbag_device_data *data)
+{
+	const char *group = "Driver/lamzu";
+	GError *error = NULL;
+
+	data->lamzu.profile_count = -1;
+	data->lamzu.button_count = -1;
+	data->lamzu.dpi_count = -1;
+	data->lamzu.dpi_range = NULL;
+
+	int profiles = g_key_file_get_integer(keyfile, group, "Profiles", &error);
+	if (!error && profiles >= 0 && profiles <= LAMZU_PROFILE_MAX)
+		data->lamzu.profile_count = profiles;
+	g_clear_error(&error);
+
+	int buttons = g_key_file_get_integer(keyfile, group, "Buttons", &error);
+	if (!error && buttons >= 0 && buttons <= LAMZU_MAX_NUM_BUTTON)
+		data->lamzu.button_count = buttons;
+	g_clear_error(&error);
+
+	int dpis = g_key_file_get_integer(keyfile, group, "Dpis", &error);
+	if (!error && dpis >= 2 && dpis <= LAMZU_MAX_NUM_DPI)
+		data->lamzu.dpi_count = dpis;
+	g_clear_error(&error);
+
+	_cleanup_(freep) char *dpi_range = g_key_file_get_string(keyfile, group, "DpiRange", &error);
+	if (!error && dpi_range)
+		data->lamzu.dpi_range = dpi_range_from_string(dpi_range);
+	g_clear_error(&error);
+}
+
 static const struct driver_map {
 	enum driver map;
 	const char *driver;
@@ -455,6 +499,7 @@ static const struct driver_map {
 	{ SINOWEALTH_NUBWO, "sinowealth_nubwo", NULL},
 	{ OPENINPUT, "openinput", NULL },
 	{ MARSGAMING, "marsgaming", NULL },
+	{ LAMZU, "lamzu", init_data_lamzu },
 };
 
 const char *

@@ -174,6 +174,7 @@ src_libratbag = [
 	'src/driver-etekcity.c',
 	'src/driver-hidpp20.c',
 	'src/driver-hidpp10.c',
+	'src/driver-lamzu.c',
 	'src/driver-logitech-g300.c',
 	'src/driver-logitech-g600.c',
 	'src/driver-roccat.c',

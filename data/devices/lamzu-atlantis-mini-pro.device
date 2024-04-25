@@ -1,0 +1,11 @@
+[Device]
+Name=Lamzu Atlantis Mini Pro
+DeviceMatch=usb:3554:f50d;usb:3554:f50f
+Driver=lamzu
+DeviceType=mouse
+
+[Driver/lamzu]
+Profiles=4
+Buttons=6
+Dpis=5
+DpiRange=50:26000@50
